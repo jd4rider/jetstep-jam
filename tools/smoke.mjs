@@ -84,9 +84,50 @@ try {
   assert.equal(game.touchVisible, true, 'touch controls are visible on a touch device')
   assert.equal(game.required > 0, true, 'level has required sparks')
 
+  // The picture must fill the phone screen and sit dead centre.
+  const fit = await page.evaluate(() => {
+    const canvas = document.querySelector('#game canvas')
+    const box = canvas.getBoundingClientRect()
+    const host = document.querySelector('#game')
+    return {
+      left: box.left, right: box.right, top: box.top, bottom: box.bottom,
+      width: box.width, height: box.height,
+      viewportWidth: window.innerWidth, viewportHeight: window.innerHeight,
+      hostDisplay: host ? getComputedStyle(host).display : 'missing',
+    }
+  })
+  assert.equal(fit.hostDisplay, 'block', `no double-centring from the host (got ${fit.hostDisplay})`)
+  assert(fit.width >= fit.viewportWidth - 1, `canvas covers the viewport width (${fit.width} vs ${fit.viewportWidth})`)
+  assert(fit.height >= fit.viewportHeight - 1, `canvas covers the viewport height (${fit.height} vs ${fit.viewportHeight})`)
+  assert(Math.abs((fit.left + fit.right) / 2 - fit.viewportWidth / 2) <= 1.5, `canvas centred horizontally (${fit.left}..${fit.right} in ${fit.viewportWidth})`)
+  assert(Math.abs((fit.top + fit.bottom) / 2 - fit.viewportHeight / 2) <= 1.5, `canvas centred vertically (${fit.top}..${fit.bottom} in ${fit.viewportHeight})`)
+  step(`canvas fills and centres: ${fit.width.toFixed(1)}x${fit.height.toFixed(1)} in ${fit.viewportWidth}x${fit.viewportHeight}`)
+
+  // Lifts must creep between floors, not oscillate several times a second.
+  const motion0 = await page.evaluate(() => window.__JETSTEP__.motionSample())
+  assert(motion0.some((platform) => platform.style === 'lift'), 'level contains a lift')
+  await page.waitForTimeout(700)
+  const motion1 = await page.evaluate(() => window.__JETSTEP__.motionSample())
+  const travel = motion0.map((platform, index) => Math.hypot(motion1[index].x - platform.x, motion1[index].y - platform.y))
+  const maxTravel = Math.max(...travel)
+  assert(maxTravel > 0.5, 'moving platforms actually move')
+  assert(maxTravel < 130, `lift motion is readable, not frantic (${maxTravel.toFixed(1)} units in 700 ms)`)
+  step(`lift motion sane: ${maxTravel.toFixed(1)} units / 700 ms`)
+
+  // Stand on a lift and confirm Pip rides it instead of being flung off.
+  assert.equal(await page.evaluate(() => window.__JETSTEP__.teleportToLift()), true, 'debug can place Pip on a lift')
+  await page.waitForTimeout(500)
+  const riding = await state()
+  await page.waitForTimeout(600)
+  const stillRiding = await state()
+  assert.equal(stillRiding.onGround, true, 'Pip stands on a moving lift')
+  assert.equal(stillRiding.health, riding.health, 'riding a lift costs no health')
+  assert(Math.abs(stillRiding.y - riding.y) < 120, `Pip travels with the lift (${riding.y} -> ${stillRiding.y})`)
+  step(`rode a lift ${riding.y} -> ${stillRiding.y}`)
+
   // Hold the real right touch control.
   const x0 = game.x
-  await touch(160, 838, 420, 11)
+  await touch(205, 838, 420, 11)
   await page.waitForTimeout(120)
   game = await state()
   assert(game.x > x0 + 4, `touch movement changed x from ${x0} to ${game.x}`)
@@ -94,7 +135,7 @@ try {
 
   // Jump / jet using the actual JET touch button, then check energy burns.
   const energy0 = game.energy
-  await touch(464, 814, 520, 12)
+  await touch(433, 814, 520, 12)
   await page.waitForTimeout(160)
   game = await state()
   assert(game.energy < energy0, `jet consumed energy (${energy0} -> ${game.energy})`)
@@ -160,6 +201,12 @@ try {
   console.log(JSON.stringify({
     ok: true,
     viewport: '390x844 touch',
+    canvas: {
+      width: Math.round(fit.width), height: Math.round(fit.height),
+      viewport: `${fit.viewportWidth}x${fit.viewportHeight}`,
+      maxLiftTravelPer700ms: Number(maxTravel.toFixed(1)),
+      rodeLiftFromY: riding.y, rodeLiftToY: stillRiding.y,
+    },
     level: {
       id: 'w1-1', required: game.required, stars: saveAfterLevel.levels['w1-1'].stars,
       energyAfterJet: game.energy, xMovedTo: game.x,

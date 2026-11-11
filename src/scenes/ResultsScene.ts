@@ -63,7 +63,7 @@ export class ResultsScene extends Phaser.Scene {
       }).setOrigin(0.5)
     }
 
-    panel(this, 38, 285, GAME_WIDTH - 76, 258, success ? 0xffe066 : 0xff6b7a, 0.82, 10)
+    panel(this, 56, 285, GAME_WIDTH - 112, 258, success ? 0xffe066 : 0xff6b7a, 0.82, 10)
     this.statRow('SCORE', formatScore(this.resultData.result.score), 320)
     this.statRow('TIME', formatMs(this.resultData.result.timeMs), 354)
     this.statRow('SPARKS', `${this.resultData.result.sparks}`, 388)
@@ -98,10 +98,10 @@ export class ResultsScene extends Phaser.Scene {
   }
 
   private statRow(label: string, value: string, y: number): void {
-    this.add.text(62, y, label, {
+    this.add.text(74, y, label, {
       fontFamily: '"Avenir Next", "Trebuchet MS", sans-serif', fontSize: '10px', fontStyle: 'bold', color: 'rgba(255,244,220,0.72)',
     })
-    this.add.text(GAME_WIDTH - 62, y, value, {
+    this.add.text(GAME_WIDTH - 74, y, value, {
       fontFamily: '"Avenir Next", "Trebuchet MS", sans-serif', fontSize: '14px', fontStyle: 'bold', color: '#fff4dc',
     }).setOrigin(1, 0)
   }
@@ -126,11 +126,11 @@ export class ResultsScene extends Phaser.Scene {
       },
     }).setDepth(20)
     new UiButton(this, {
-      x: 138, y: 770, width: 170, height: 40, label: 'MODES', small: true, color: 0xffe066,
+      x: 150, y: 770, width: 160, height: 40, label: 'MODES', small: true, color: 0xffe066,
       onClick: () => { audio.sfx('click'); this.scene.start('Modes') },
     }).setDepth(20)
     new UiButton(this, {
-      x: 402, y: 770, width: 170, height: 40, label: 'MAIN MENU', small: true, color: 0x9beeff,
+      x: 390, y: 770, width: 160, height: 40, label: 'MAIN MENU', small: true, color: 0x9beeff,
       onClick: () => { audio.sfx('back'); this.scene.start('Menu') },
     }).setDepth(20)
     this.add.text(GAME_WIDTH / 2, 842, 'TIP · EVERY REQUIRED SPARK OPENS THE EXIT. OPTIONAL RESONANCE IS PURE SCORE.', {

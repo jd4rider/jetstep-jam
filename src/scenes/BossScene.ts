@@ -617,7 +617,7 @@ export class BossScene extends Phaser.Scene {
     this.hud.setPauseEnabled(false)
     const layer = this.add.container(0, 0).setScrollFactor(0).setDepth(3000)
     const shade = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x070510, 0.82).setInteractive()
-    const card = panel(this, 40, 295, GAME_WIDTH - 80, 300, 0xff7ec4, 0.96, 3001)
+    const card = panel(this, 56, 295, GAME_WIDTH - 112, 300, 0xff7ec4, 0.96, 3001)
     const title = this.add.text(GAME_WIDTH / 2, 334, 'PAUSED', {
       fontFamily: '"Avenir Next", "Trebuchet MS", sans-serif', fontSize: '30px', fontStyle: 'bold', color: '#fff4dc',
     }).setOrigin(0.5).setDepth(3002)

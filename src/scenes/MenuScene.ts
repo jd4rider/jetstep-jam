@@ -95,42 +95,42 @@ export class MenuScene extends Phaser.Scene {
     this.spawnMenuSparks(save.settings.reducedMotion)
 
     new UiButton(this, {
-      x: GAME_WIDTH / 2, y: 486, width: 430, height: 58,
+      x: GAME_WIDTH / 2, y: 486, width: 420, height: 58,
       label: completed >= 1000 ? 'REPLAY THE JOURNEY' : 'CONTINUE JOURNEY',
       sublabel: completed >= 1000 ? 'All 1,000 levels cleared' : `${next.toUpperCase()} · ${nextMeta}`,
       glyph: '▶', color: 0x5cf2d6, align: 'left',
       onClick: () => this.startGame(next),
     }).setDepth(30)
     new UiButton(this, {
-      x: GAME_WIDTH / 2, y: 554, width: 430, height: 52,
+      x: GAME_WIDTH / 2, y: 554, width: 420, height: 52,
       label: 'UNIVERSE MAP', sublabel: `${completed}/1,000 levels · ${totalStars(save)} stars`,
       glyph: '✺', color: 0xb79cff, align: 'left',
       onClick: () => this.open('Universe'),
     }).setDepth(30)
     new UiButton(this, {
-      x: GAME_WIDTH / 2, y: 614, width: 430, height: 52,
+      x: GAME_WIDTH / 2, y: 614, width: 420, height: 52,
       label: 'ARCADE MODES', sublabel: 'Endless · Classic · Daily · Time · Boss Rush · Zen',
       glyph: '◈', color: 0xff7ec4, align: 'left',
       onClick: () => this.open('Modes'),
     }).setDepth(30)
     new UiButton(this, {
-      x: 138, y: 694, width: 194, height: 54, label: 'CUSTOMIZE', small: true,
+      x: 150, y: 694, width: 180, height: 54, label: 'CUSTOMIZE', small: true,
       glyph: '♢', color: 0xffe066,
       onClick: () => this.open('Customize'),
     }).setDepth(30)
     new UiButton(this, {
-      x: 352, y: 694, width: 194, height: 54, label: 'TROPHIES', small: true,
+      x: 390, y: 694, width: 180, height: 54, label: 'TROPHIES', small: true,
       glyph: '♛', color: 0xffa94d,
       onClick: () => this.open('Achievements'),
     }).setDepth(30)
     new UiButton(this, {
-      x: GAME_WIDTH / 2, y: 762, width: 430, height: 44, label: 'SETTINGS', small: true,
+      x: GAME_WIDTH / 2, y: 762, width: 420, height: 44, label: 'SETTINGS', small: true,
       glyph: '⚙', color: 0x9beeff,
       onClick: () => this.open('Settings'),
     }).setDepth(30)
 
-    iconButton(this, 34, 34, '?', () => this.showHelp(), 'How to play').setDepth(40)
-    iconButton(this, GAME_WIDTH - 34, 34, '⚙', () => this.open('Settings'), 'Settings').setDepth(40)
+    iconButton(this, 80, 34, '?', () => this.showHelp(), 'How to play').setDepth(40)
+    iconButton(this, GAME_WIDTH - 80, 34, '⚙', () => this.open('Settings'), 'Settings').setDepth(40)
 
     const stars = addStars(this, GAME_WIDTH / 2, 822, Math.min(3, Math.floor(totalStars(save) / 120)), 15, 19)
     stars.setDepth(30)
@@ -198,9 +198,9 @@ export class MenuScene extends Phaser.Scene {
     const shade = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x080611, 0.83).setInteractive()
     const panel = this.add.graphics()
     panel.fillStyle(0x1a1232, 1)
-    panel.fillRoundedRect(28, 170, GAME_WIDTH - 56, 570, 22)
+    panel.fillRoundedRect(58, 170, GAME_WIDTH - 116, 570, 22)
     panel.lineStyle(1.5, 0x5cf2d6, 0.55)
-    panel.strokeRoundedRect(28, 170, GAME_WIDTH - 56, 570, 22)
+    panel.strokeRoundedRect(58, 170, GAME_WIDTH - 116, 570, 22)
     const title = this.add.text(GAME_WIDTH / 2, 206, 'HOW TO JETSTEP', {
       fontFamily: '"Avenir Next", "Trebuchet MS", sans-serif', fontSize: '21px', fontStyle: 'bold', color: '#fff4dc',
     }).setOrigin(0.5)
@@ -218,14 +218,14 @@ export class MenuScene extends Phaser.Scene {
     lines.forEach(([label, copy], index) => {
       const y = 252 + index * 57
       layer.add(
-        this.add.text(54, y, label, {
+        this.add.text(84, y, label, {
           fontFamily: '"Avenir Next", "Trebuchet MS", sans-serif', fontSize: '11px', fontStyle: 'bold', color: '#5cf2d6',
         }),
       )
       layer.add(
-        this.add.text(54, y + 16, copy, {
+        this.add.text(84, y + 16, copy, {
           fontFamily: '"Avenir Next", "Trebuchet MS", sans-serif', fontSize: '11px', color: 'rgba(255,244,220,0.72)',
-          wordWrap: { width: 405 },
+          wordWrap: { width: 355 },
         }),
       )
     })

@@ -71,8 +71,9 @@ export class TouchControls {
   private layout(): void {
     const scale = this.settings.touchScale
     const leftHanded = this.settings.leftHanded
-    const leftBase = leftHanded ? GAME_WIDTH - 106 : 106
-    const rightBase = leftHanded ? 106 : GAME_WIDTH - 106
+    const edge = 54
+    const leftBase = leftHanded ? GAME_WIDTH - edge - 97 * scale : edge + 97 * scale
+    const rightBase = leftHanded ? edge + 83 * scale : GAME_WIDTH - edge - 83 * scale
     const positions: Record<ButtonName, { x: number; y: number; radius: number }> = {
       left: { x: leftBase - 54 * scale, y: GAME_HEIGHT - 122, radius: 43 * scale },
       right: { x: leftBase + 54 * scale, y: GAME_HEIGHT - 122, radius: 43 * scale },

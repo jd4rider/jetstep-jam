@@ -80,7 +80,7 @@ export class ModeScene extends Phaser.Scene {
     ]
     modes.forEach((mode, index) => {
       new UiButton(this, {
-        x: GAME_WIDTH / 2, y: 168 + index * 94, width: 438, height: 78,
+        x: GAME_WIDTH / 2, y: 168 + index * 94, width: 420, height: 78,
         label: mode.label, sublabel: mode.sub, glyph: mode.glyph, color: mode.color,
         align: 'left', onClick: () => {
           audio.sfx('click')

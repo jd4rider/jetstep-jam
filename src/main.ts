@@ -23,6 +23,8 @@ declare global {
       launchBoss: (bossIndex: number, rush?: boolean) => void
       collectRequired: () => void
       teleportToExit: () => void
+      motionSample: () => Array<{ x: number; y: number; axis: string; style: string }>
+      teleportToLift: () => boolean
       finish: () => void
       damage: () => void
       hitBoss: () => void
@@ -31,12 +33,23 @@ declare global {
   }
 }
 
+// Tall phones are narrower than the 9:16 design. ENVELOP fills those screens
+// and crops only the outer margin; desktop and landscape windows keep the whole
+// stage with FIT. Phaser then centres the canvas itself with margins, so the
+// host element must not centre it a second time.
+const designAspect = GAME_WIDTH / GAME_HEIGHT
+const scaleModeForViewport = (): Phaser.Scale.ScaleModeType =>
+  window.innerWidth / Math.max(1, window.innerHeight) <= designAspect + 0.015
+    ? Phaser.Scale.ENVELOP
+    : Phaser.Scale.FIT
+const scaleMode = scaleModeForViewport()
+
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'game',
   backgroundColor: '#0b0718',
   scale: {
-    mode: Phaser.Scale.FIT,
+    mode: scaleMode,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     width: GAME_WIDTH,
     height: GAME_HEIGHT,
@@ -114,6 +127,14 @@ window.__JETSTEP__ = {
     const scene = activeScene()
     if (scene instanceof GameScene) scene.debugTeleportToExit()
   },
+  motionSample: () => {
+    const scene = activeScene()
+    return scene instanceof GameScene ? scene.debugMotionSample() : []
+  },
+  teleportToLift: () => {
+    const scene = activeScene()
+    return scene instanceof GameScene ? scene.debugTeleportToLift() : false
+  },
   finish: () => {
     const scene = activeScene()
     if (scene instanceof GameScene) scene.debugFinish()
@@ -150,7 +171,15 @@ const preventCanvasScroll = (event: TouchEvent): void => {
 }
 document.addEventListener('touchmove', preventCanvasScroll, { passive: false })
 
-window.addEventListener('resize', () => game.scale.refresh())
+let activeScaleMode = scaleMode
+window.addEventListener('resize', () => {
+  const next = scaleModeForViewport()
+  if (next !== activeScaleMode) {
+    activeScaleMode = next
+    game.scale.scaleMode = next
+  }
+  game.scale.refresh()
+})
 window.addEventListener('load', () => game.scale.refresh())
 window.setTimeout(() => game.scale.refresh(), 120)
 

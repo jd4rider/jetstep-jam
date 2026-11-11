@@ -2,7 +2,7 @@ export const GAME_WIDTH = 540
 export const GAME_HEIGHT = 960
 export const GAME_ID = 'jetstep-jam'
 export const STORAGE_KEY = 'jetstep-jam-save-v1'
-export const VERSION = '1.0.0'
+export const VERSION = '1.0.1'
 export const SCHEMA_VERSION = 2
 
 export const FONT = '"Avenir Next", "Trebuchet MS", "Segoe UI", system-ui, sans-serif'

@@ -1,7 +1,7 @@
 {
   "name": "jetstep-jam",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Jetstep Jam! — a portrait-first, multi-floor jet-boot arcade adventure for Little Joy Arcade.",
   "author": "jd4rider",
   "type": "module",

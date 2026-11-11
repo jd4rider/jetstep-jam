@@ -6,7 +6,7 @@ import type { GameplaySettings, LevelData, MovingPlatformSpec, PlatformSpec } fr
 interface MovingPlatform {
   spec: MovingPlatformSpec
   rect: Phaser.GameObjects.Rectangle
-  body: Phaser.Physics.Arcade.Body
+  body: Phaser.Physics.Arcade.StaticBody
   visual: Phaser.GameObjects.Graphics
   x: number
   y: number
@@ -36,7 +36,7 @@ export class LevelView {
   readonly level: LevelData
   readonly solids: Phaser.Physics.Arcade.StaticGroup
   readonly oneWays: Phaser.Physics.Arcade.StaticGroup
-  readonly movingGroup: Phaser.Physics.Arcade.Group
+  readonly movingGroup: Phaser.Physics.Arcade.StaticGroup
   readonly sparks: Phaser.Physics.Arcade.Group
   readonly optionalSparks: Phaser.Physics.Arcade.Group
   readonly energy: Phaser.Physics.Arcade.Group
@@ -53,6 +53,7 @@ export class LevelView {
   private readonly portal: Phaser.GameObjects.Graphics
   private readonly settings: GameplaySettings
   private time = 0
+  private movingTime = 0
   private exitReady = false
   private activatedCheckpoints = 0
 
@@ -64,7 +65,7 @@ export class LevelView {
     this.worldPalette = world.palette
     this.solids = scene.physics.add.staticGroup()
     this.oneWays = scene.physics.add.staticGroup()
-    this.movingGroup = scene.physics.add.group({ allowGravity: false, immovable: true })
+    this.movingGroup = scene.physics.add.staticGroup()
     this.sparks = scene.physics.add.group({ allowGravity: false, immovable: true })
     this.optionalSparks = scene.physics.add.group({ allowGravity: false, immovable: true })
     this.energy = scene.physics.add.group({ allowGravity: false, immovable: true })
@@ -150,13 +151,10 @@ export class LevelView {
   private buildMovingPlatforms(): void {
     this.level.movingPlatforms.forEach((spec) => {
       const rect = this.scene.add.rectangle(spec.x, spec.y, spec.width, spec.height, 0xffffff, 0)
-      this.scene.physics.add.existing(rect)
-      const body = rect.body as Phaser.Physics.Arcade.Body
-      body.setAllowGravity(false)
-      body.setImmovable(true)
-      body.setSize(spec.width, spec.height, true)
       rect.setVisible(false)
       this.movingGroup.add(rect)
+      const body = rect.body as Phaser.Physics.Arcade.StaticBody
+      body.updateFromGameObject()
       const visual = this.scene.add.graphics().setDepth(4)
       this.moving.push({ spec, rect, body, visual, x: spec.x, y: spec.y, deltaX: 0, deltaY: 0 })
       this.drawMovingVisual(visual, spec, spec.x, spec.y)
@@ -361,7 +359,8 @@ export class LevelView {
     this.animatePickups(this.optionalSparks, time, player, magnetRange, dt, true, radar)
     this.animatePickups(this.energy, time, player, magnetRange, dt, false)
     this.animatePower(time)
-    this.updateMoving(time, freezeMachines)
+    if (!freezeMachines) this.movingTime += Math.min(deltaMs, 34)
+    this.updateMoving(freezeMachines)
     this.portalRings.forEach((ring, index) => {
       ring.ellipse.setScale(1 + Math.sin(time * 0.0016 + index) * 0.025)
     })
@@ -406,11 +405,15 @@ export class LevelView {
     })
   }
 
-  private updateMoving(time: number, freeze: boolean): void {
+  private updateMoving(freeze: boolean): void {
+    if (freeze) return
     this.moving.forEach((platform) => {
-      if (freeze) return
       const spec = platform.spec
-      const progress = (Math.sin((time * spec.speed) / 1000 + spec.phase * Math.PI * 2) + 1) / 2
+      // speed is authored in world-units per second. A full there-and-back
+      // cycle is therefore twice the travel distance, with a floor so short
+      // carriers never feel twitchy.
+      const cycleMs = Math.max(2800, (spec.distance / Math.max(24, spec.speed * 1.35)) * 2000)
+      const progress = (Math.sin((this.movingTime / cycleMs) * Math.PI * 2 + spec.phase * Math.PI * 2) + 1) / 2
       let x = spec.x
       let y = spec.y
       if (spec.axis === 'x') x += (progress * 2 - 1) * spec.distance * 0.5
@@ -429,6 +432,20 @@ export class LevelView {
     })
   }
 
+  motionSample(): Array<{ x: number; y: number; axis: string; style: string }> {
+    return this.moving.map((platform) => ({
+      x: Math.round(platform.x),
+      y: Math.round(platform.y),
+      axis: platform.spec.axis,
+      style: platform.spec.style,
+    }))
+  }
+
+  boardableLift(): { x: number; y: number; top: number } | null {
+    const platform = this.moving.find((item) => item.spec.style === 'lift')
+    return platform ? { x: platform.x, y: platform.y, top: platform.body.top } : null
+  }
+
   rideDelta(playerBottom: number, playerLeft: number, playerRight: number): { x: number; y: number } {
     for (const platform of this.moving) {
       const top = platform.body.top
@@ -436,7 +453,12 @@ export class LevelView {
       const platformLeft = platform.body.left
       const platformRight = platform.body.right
       if (playerRight < platformLeft - 4 || playerLeft > platformRight + 4) continue
-      return { x: platform.deltaX, y: platform.deltaY }
+      // A suspended tab can produce a large frame jump. Never fling the player
+      // across the stage when they step back onto a platform.
+      return {
+        x: Phaser.Math.Clamp(platform.deltaX, -24, 24),
+        y: Phaser.Math.Clamp(platform.deltaY, -24, 24),
+      }
     }
     return { x: 0, y: 0 }
   }

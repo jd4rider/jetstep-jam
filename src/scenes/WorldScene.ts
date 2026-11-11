@@ -86,7 +86,7 @@ export class WorldScene extends Phaser.Scene {
     levels.forEach((level, index) => {
       const column = index % 5
       const row = Math.floor(index / 5)
-      const x = 54 + column * 108
+      const x = 100 + column * 85
       const y = 180 + row * 88
       points.push({ x, y })
       const unlocked = levelUnlocked(save, level.id)
@@ -95,7 +95,7 @@ export class WorldScene extends Phaser.Scene {
       const accent = Phaser.Display.Color.HexStringToColor(world.palette.accent).color
       const boss = level.boss
       const button = new UiButton(this, {
-        x, y, width: 94, height: 70,
+        x, y, width: 78, height: 70,
         label: boss ? 'BOSS' : String(level.levelNumber).padStart(2, '0'),
         sublabel: record?.completed ? starsLabel(record.stars) : unlocked ? 'READY' : 'LOCKED',
         glyph: boss ? '◆' : undefined,

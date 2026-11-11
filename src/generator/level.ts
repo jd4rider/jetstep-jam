@@ -256,7 +256,9 @@ export function generateLevel(meta: LevelMeta, options: GenerateOptions = {}): L
       if (floor % 2 === 0) {
         movingPlatforms.push({
           x: gapX + gapWidth / 2,
-          y: y - 14,
+          // Sit flush with the floor so the lift is a walk-on platform, then
+          // descend exactly one floor before returning.
+          y: y + 8,
           width: Math.min(104, gapWidth - 18),
           height: 16,
           axis: 'y',

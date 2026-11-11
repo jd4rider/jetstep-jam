@@ -243,7 +243,7 @@ export function addStars(
 
 export function backButton(scene: Phaser.Scene, onClick: () => void, y = 910): UiButton {
   return new UiButton(scene, {
-    x: 72, y, width: 94, height: 38, label: 'BACK', small: true, glyph: '‹',
+    x: 98, y, width: 88, height: 38, label: 'BACK', small: true, glyph: '‹',
     color: COLORS.muted, onClick, align: 'center',
   })
 }

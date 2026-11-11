@@ -800,7 +800,7 @@ export class GameScene extends Phaser.Scene {
     audio.sfx('click')
     const layer = this.add.container(0, 0).setScrollFactor(0).setDepth(3000)
     const shade = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x070510, 0.8).setInteractive()
-    const card = panel(this, 40, 245, GAME_WIDTH - 80, 400, 0x5cf2d6, 0.96, 3001)
+    const card = panel(this, 56, 245, GAME_WIDTH - 112, 400, 0x5cf2d6, 0.96, 3001)
     const title = this.add.text(GAME_WIDTH / 2, 286, 'PAUSED', {
       fontFamily: '"Avenir Next", "Trebuchet MS", sans-serif', fontSize: '33px', fontStyle: 'bold', color: '#fff4dc',
     }).setOrigin(0.5).setDepth(3002)
@@ -935,6 +935,19 @@ export class GameScene extends Phaser.Scene {
 
   debugTeleportToExit(): void {
     this.player.teleport(this.level.exit.x, this.level.exit.y + 22)
+  }
+
+  debugMotionSample(): Array<{ x: number; y: number; axis: string; style: string }> {
+    return this.levelView.motionSample()
+  }
+
+  debugTeleportToLift(): boolean {
+    const lift = this.levelView.boardableLift()
+    if (!lift) return false
+    // Body.reset centres the hitbox, so this leaves Pip's feet 6 units above
+    // the lift surface to drop onto it.
+    this.player.teleport(lift.x, lift.top - 34)
+    return true
   }
 
   debugDamage(): void {

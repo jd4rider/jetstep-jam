@@ -6,7 +6,7 @@ import {
   parseLevelId, totalStars, worldStars, worldUnlocked,
 } from '../src/data/levels'
 import { WORLDS, worldAt } from '../src/data/worlds'
-import { generateLevel } from '../src/generator/level'
+import { FLOOR_HEIGHT, generateLevel } from '../src/generator/level'
 import { catalogErrors, progressionProbe, validateAllLevels, validateLevel } from '../src/generator/validation'
 import type { StarCount } from '../src/types'
 
@@ -77,6 +77,22 @@ describe('generated level validation', () => {
     expect(zen.hazards).toHaveLength(0)
     expect(zen.enemies).toHaveLength(0)
     expect(validateLevel(zen)).toEqual([])
+  })
+
+  it('sits every lift flush with the floor it serves', () => {
+    let lifts = 0
+    for (const meta of ALL_LEVELS.slice(0, 60)) {
+      const level = generateLevel(meta)
+      const floorTops = new Set(level.platforms.map((platform) => platform.y))
+      for (const lift of level.movingPlatforms.filter((item) => item.style === 'lift')) {
+        lifts += 1
+        expect(floorTops.has(lift.y - lift.height / 2)).toBe(true)
+        expect(lift.distance).toBe(FLOOR_HEIGHT)
+        expect(lift.speed).toBeGreaterThanOrEqual(30)
+        expect(lift.speed).toBeLessThanOrEqual(60)
+      }
+    }
+    expect(lifts).toBeGreaterThan(30)
   })
 
   it('provides a safe front door and a reachable exit on every level', () => {

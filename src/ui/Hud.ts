@@ -51,21 +51,21 @@ export class Hud {
     background.moveTo(0, 123.5)
     background.lineTo(GAME_WIDTH, 123.5)
     background.strokePath()
-    this.worldText = scene.add.text(16, 12, '', {
+    this.worldText = scene.add.text(64, 12, '', {
       fontFamily: FONT, fontSize: '9px', fontStyle: 'bold', color: CSS.teal, letterSpacing: 2,
     })
-    this.levelText = scene.add.text(16, 26, '', {
+    this.levelText = scene.add.text(64, 26, '', {
       fontFamily: DISPLAY_FONT, fontSize: '17px', fontStyle: 'bold', color: CSS.cream,
     })
     this.hearts = scene.add.graphics()
     this.energyBar = scene.add.graphics()
-    this.energyLabel = scene.add.text(16, 75, '', {
+    this.energyLabel = scene.add.text(64, 75, '', {
       fontFamily: FONT, fontSize: '8px', fontStyle: 'bold', color: 'rgba(255,244,220,0.72)',
     })
-    this.sparkText = scene.add.text(286, 52, '', {
+    this.sparkText = scene.add.text(350, 52, '', {
       fontFamily: DISPLAY_FONT, fontSize: '14px', fontStyle: 'bold', color: CSS.cream,
     })
-    this.scoreText = scene.add.text(GAME_WIDTH - 16, 17, '', {
+    this.scoreText = scene.add.text(GAME_WIDTH - 64, 17, '', {
       fontFamily: DISPLAY_FONT, fontSize: '16px', fontStyle: 'bold', color: CSS.gold,
     }).setOrigin(1, 0)
     this.objectiveText = scene.add.text(GAME_WIDTH / 2, 132, '', {
@@ -75,16 +75,16 @@ export class Hud {
     this.comboText = scene.add.text(GAME_WIDTH / 2, 164, '', {
       fontFamily: DISPLAY_FONT, fontSize: '21px', fontStyle: 'bold', color: CSS.gold,
     }).setOrigin(0.5)
-    this.powerText = scene.add.text(GAME_WIDTH - 16, 77, '', {
-      fontFamily: FONT, fontSize: '9px', fontStyle: 'bold', color: CSS.violet, align: 'right',
-      wordWrap: { width: 220 },
-    }).setOrigin(1, 0)
+    this.powerText = scene.add.text(64, 96, '', {
+      fontFamily: FONT, fontSize: '9px', fontStyle: 'bold', color: CSS.violet,
+      wordWrap: { width: 260 },
+    })
     this.toastText = scene.add.text(GAME_WIDTH / 2, 226, '', {
       fontFamily: FONT, fontSize: '12px', fontStyle: 'bold', color: CSS.cream,
       backgroundColor: 'rgba(10,7,22,0.82)', padding: { x: 14, y: 7 }, align: 'center',
       wordWrap: { width: 360 },
     }).setOrigin(0.5).setAlpha(0)
-    this.pause = iconButton(scene, GAME_WIDTH - 30, 87, 'Ⅱ', onPause, 'Pause')
+    this.pause = iconButton(scene, GAME_WIDTH - 88, 87, 'Ⅱ', onPause, 'Pause')
     this.container.add([
       background, this.worldText, this.levelText, this.hearts, this.energyBar,
       this.energyLabel, this.sparkText, this.scoreText, this.objectiveText,
@@ -125,7 +125,7 @@ export class Hud {
     g.clear()
     const total = Math.max(3, max)
     for (let index = 0; index < total; index += 1) {
-      const x = 23 + index * 23
+      const x = 70 + index * 22
       const y = 55
       const filled = index < health
       g.fillStyle(filled ? COLORS.coral : 0x3b2948, filled ? 1 : 0.7)
@@ -150,14 +150,14 @@ export class Hud {
     g.clear()
     const ratio = Phaser.Math.Clamp(energy / 100, 0, 1)
     g.fillStyle(0x080611, 0.88)
-    g.fillRoundedRect(98, 52, 176, 13, 6)
+    g.fillRoundedRect(170, 52, 172, 13, 6)
     g.lineStyle(1, 0xffffff, 0.12)
-    g.strokeRoundedRect(98, 52, 176, 13, 6)
+    g.strokeRoundedRect(170, 52, 172, 13, 6)
     const color = ratio < 0.24 ? COLORS.coral : ratio < 0.5 ? COLORS.gold : COLORS.teal
     g.fillGradientStyle(color, color, 0x9bffda, 0x9bffda, 1, 1, 1, 1)
-    if (ratio > 0) g.fillRoundedRect(100, 54, 172 * ratio, 9, 4)
+    if (ratio > 0) g.fillRoundedRect(172, 54, 168 * ratio, 9, 4)
     g.fillStyle(0xffffff, 0.34)
-    g.fillRect(102, 55, Math.max(0, 168 * ratio), 1)
+    g.fillRect(174, 55, Math.max(0, 164 * ratio), 1)
     this.energyLabel.setText(`JET  ${Math.ceil(energy)}%`)
   }
 

@@ -37,20 +37,20 @@ export class SettingsScene extends Phaser.Scene {
 
     this.section('ACCESS & FEEL', 468)
     this.toggle('MUTE', 496, 130, 'muted')
-    this.toggle('REDUCED MOTION', 496, 360, 'reducedMotion')
+    this.toggle('REDUCED MOTION', 496, 320, 'reducedMotion')
     this.toggle('REDUCED FLASH', 542, 130, 'reducedFlash')
-    this.toggle('HIGH CONTRAST', 542, 360, 'highContrast')
+    this.toggle('HIGH CONTRAST', 542, 320, 'highContrast')
     this.toggle('LARGE UI TEXT', 588, 130, 'largeUi')
-    this.toggle('LEFT-HANDED', 588, 360, 'leftHanded')
+    this.toggle('LEFT-HANDED', 588, 320, 'leftHanded')
     this.toggle('HAPTICS', 634, 130, 'haptics')
 
-    this.add.text(36, 690, 'KEYBOARD  A/D or arrows · Space/↑ jump + jet · S/↓ duck · E interact · Esc pause · R restart', {
+    this.add.text(58, 690, 'KEYBOARD  A/D or arrows · Space/↑ jump + jet · S/↓ duck · E interact · Esc pause · R restart', {
       fontFamily: '"Avenir Next", "Trebuchet MS", sans-serif', fontSize: '10px', color: 'rgba(255,244,220,0.56)',
-      wordWrap: { width: 468 }, lineSpacing: 5,
+      wordWrap: { width: 424 }, lineSpacing: 5,
     })
-    this.add.text(36, 728, 'TOUCH  Left/right on the left · JET and DUCK on the right. Tap JET to jump; hold to fly.', {
+    this.add.text(58, 728, 'TOUCH  Left/right on the left · JET and DUCK on the right. Tap JET to jump; hold to fly.', {
       fontFamily: '"Avenir Next", "Trebuchet MS", sans-serif', fontSize: '10px', color: 'rgba(255,244,220,0.56)',
-      wordWrap: { width: 468 }, lineSpacing: 5,
+      wordWrap: { width: 424 }, lineSpacing: 5,
     })
     new UiButton(this, {
       x: GAME_WIDTH / 2, y: 800, width: 300, height: 40, label: 'RESET SETTINGS', small: true,
@@ -60,20 +60,20 @@ export class SettingsScene extends Phaser.Scene {
   }
 
   private section(label: string, y: number): void {
-    this.add.text(32, y, label, {
+    this.add.text(58, y, label, {
       fontFamily: '"Avenir Next", "Trebuchet MS", sans-serif', fontSize: '10px', fontStyle: 'bold',
       color: CSS.teal, letterSpacing: 3,
     })
     const line = this.add.graphics()
     line.lineStyle(1, 0x5cf2d6, 0.18)
     line.beginPath()
-    line.moveTo(32, y + 17)
-    line.lineTo(GAME_WIDTH - 32, y + 17)
+    line.moveTo(58, y + 17)
+    line.lineTo(GAME_WIDTH - 58, y + 17)
     line.strokePath()
   }
 
   private volumeRow(label: string, y: number, key: 'masterVolume' | 'musicVolume' | 'sfxVolume' | 'ambienceVolume'): void {
-    this.add.text(38, y + 11, label, {
+    this.add.text(64, y + 11, label, {
       fontFamily: '"Avenir Next", "Trebuchet MS", sans-serif', fontSize: '11px', fontStyle: 'bold', color: CSS.cream,
     })
     const value = this.add.text(300, y + 11, '', {
@@ -91,7 +91,7 @@ export class SettingsScene extends Phaser.Scene {
   }
 
   private touchRow(label: string, y: number, key: 'touchScale' | 'touchOpacity', step: number, min: number, max: number): void {
-    this.add.text(38, y + 11, label, {
+    this.add.text(64, y + 11, label, {
       fontFamily: '"Avenir Next", "Trebuchet MS", sans-serif', fontSize: '11px', fontStyle: 'bold', color: CSS.cream,
     })
     const value = this.add.text(300, y + 11, '', {
@@ -110,7 +110,7 @@ export class SettingsScene extends Phaser.Scene {
 
   private toggle(label: string, y: number, x: number, key: 'muted' | 'reducedMotion' | 'reducedFlash' | 'highContrast' | 'largeUi' | 'leftHanded' | 'haptics'): void {
     const button = new UiButton(this, {
-      x: x + 90, y, width: 190, height: 36, label, small: true, color: 0x9beeff, align: 'left',
+      x: x + 80, y, width: 160, height: 36, label, small: true, color: 0x9beeff, align: 'left',
       onClick: () => {
         this.settings[key] = !this.settings[key]
         this.persist()

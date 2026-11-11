@@ -96,7 +96,7 @@ export class UniverseScene extends Phaser.Scene {
       const button = new UiButton(this, {
         x: GAME_WIDTH / 2,
         y,
-        width: 448,
+        width: 420,
         height: 112,
         label: world.name,
         sublabel: `${world.feature}\n${progress}`,
