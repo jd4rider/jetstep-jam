@@ -12,15 +12,18 @@ Date: 2026-11-11
 | `npm run build` | Pass; 1.67 MB JS before gzip, 396 KB gzip |
 | Browser smoke, 390×844 touch viewport | Pass |
 | Touch right button | Pass, Pip moved from x 102 to x 190 |
-| Jump / jet energy consumption | Pass, 100 → 98 |
+| Jump / jet energy consumption via the JET touch button | Pass, 100 → 99 |
 | Pause and resume | Pass |
 | Collect all 8 required sparks and light exit | Pass |
 | Reach exit, show results and save 3-star clear | Pass |
 | Save `w1-50` after boss completion | Pass |
 | Console/page errors during smoke | 0 |
+| Production GitHub Pages smoke | Pass at https://jd4rider.github.io/jetstep-jam/ |
+| Portal home and play iframe | Pass; portal opens `https://jd4rider.github.io/jetstep-jam/?v=1.0.0` |
 | Supabase catalogue row | Pass, `jetstep-jam` 1.0.0, live |
+| Supabase migration ledger | Pass, `0047` recorded as applied on production |
 
-The smoke run uses the native ARM headless Chrome from the local Playwright cache because the installed Google Chrome is the Intel build and its DevTools launch was unreliable on this Apple Silicon host. The game itself reported Canvas/Web Audio fallback rendering in that browser, not WebGL.
+The smoke run uses the native ARM headless Chrome from the local Playwright cache because the installed Google Chrome is the Intel build and its DevTools launch was unreliable on this Apple Silicon host. The game itself reported Canvas/Web Audio fallback rendering in that browser, not WebGL. The same smoke program passed against both the local production build and the deployed GitHub Pages URL.
 
 ## Automated coverage
 

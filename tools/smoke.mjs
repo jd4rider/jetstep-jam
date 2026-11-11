@@ -92,11 +92,10 @@ try {
   assert(game.x > x0 + 4, `touch movement changed x from ${x0} to ${game.x}`)
   step(`touch moved Pip ${x0} -> ${game.x}`)
 
-  // Jump / jet from the keyboard, then check energy actually burns.
+  // Jump / jet using the actual JET touch button, then check energy burns.
   const energy0 = game.energy
-  await page.keyboard.down('Space')
-  await page.waitForTimeout(420)
-  await page.keyboard.up('Space')
+  await touch(464, 814, 520, 12)
+  await page.waitForTimeout(160)
   game = await state()
   assert(game.energy < energy0, `jet consumed energy (${energy0} -> ${game.energy})`)
   assert.equal(game.paused, false)
