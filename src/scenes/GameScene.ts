@@ -87,6 +87,7 @@ export class GameScene extends Phaser.Scene {
   private optionalTotal = 0
   private combo = 0
   private bestCombo = 0
+  private lastFeet = 0
   private comboTimer = 0
   private airRun = 0
   private bestAirRun = 0
@@ -177,6 +178,7 @@ export class GameScene extends Phaser.Scene {
     this.levelView = new LevelView(this, this.level, save.settings)
     this.player = new Player(this, this.level.start.x, this.level.start.y)
     this.player.setHealth(this.health)
+    this.lastFeet = this.player.body.bottom
     this.playerView = new PipView(this, save.cosmetics, 20)
     this.hazards = new HazardSystem(this, this.level)
     this.enemies = new EnemySystem(this, this.level)
@@ -236,7 +238,11 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.player.hitbox, this.levelView.oneWays, undefined, (_playerObject, platform) => {
       const body = this.player.body
       const platformBody = (platform as Phaser.GameObjects.Rectangle).body as Phaser.Physics.Arcade.StaticBody
-      return body.velocity.y >= 0 && body.bottom <= platformBody.top + 10
+      // Compare where the feet were before this step. A fast fall can already
+      // be more than 10 units into the platform when the check runs, and a
+      // current-position test then drops the player straight through.
+      const previousFeet = body.prev.y + body.height
+      return body.velocity.y >= 0 && previousFeet <= platformBody.top + 2
     })
     this.physics.add.overlap(this.player.hitbox, this.levelView.sparks, (_p, spark) => this.collectSpark(spark as Phaser.Physics.Arcade.Image, false))
     this.physics.add.overlap(this.player.hitbox, this.levelView.optionalSparks, (_p, spark) => this.collectSpark(spark as Phaser.Physics.Arcade.Image, true))
@@ -285,13 +291,6 @@ export class GameScene extends Phaser.Scene {
       mods.radar,
       mods.freezeMachines,
     )
-    const ride = this.levelView.rideDelta(this.player.body.bottom, this.player.body.left, this.player.body.right)
-    if (!this.knockedOut && (ride.x !== 0 || ride.y !== 0)) {
-      this.player.hitbox.x += ride.x
-      this.player.hitbox.y += ride.y
-      this.player.body.updateFromGameObject()
-    }
-
     if (!this.knockedOut) {
       const input = this.readInput()
       const events = this.player.update(input, deltaMs)
@@ -316,7 +315,9 @@ export class GameScene extends Phaser.Scene {
         this.jetPuff()
       }
       if (this.player.onGround) this.airRun = 0
+      this.catchFallThrough(this.lastFeet)
     }
+    this.lastFeet = this.player.body.bottom
 
     this.hazards.update(time, deltaMs, mods)
     this.enemies.update(time, deltaMs, { x: this.player.body.center.x, y: this.player.body.center.y }, mods)
@@ -345,6 +346,41 @@ export class GameScene extends Phaser.Scene {
       exitReady: this.exitReady,
     }, deltaMs)
     audio.setIntensity(this.combo / 15 + (1 - this.player.energy / 100) * 0.25)
+  }
+
+  /**
+   * Arcade physics resolves collisions one step at a time. A fast fall, a thin
+   * one-way platform or a carried lift can leave Pip below a surface he was
+   * above last frame, which reads as falling straight through the floor. Put
+   * him back on top of anything he crossed downwards.
+   */
+  private catchFallThrough(prevBottom: number): void {
+    const body = this.player.body
+    if (body.velocity.y <= 0) return
+    if (body.bottom <= prevBottom) return
+    // A teleport or respawn clears downwards speed; a genuine fall keeps it,
+    // even when a long frame moves the player several floors at once.
+    if (body.bottom - prevBottom > 150 && body.velocity.y < 200) return
+    const platforms = [
+      ...this.levelView.solids.getChildren(),
+      ...this.levelView.oneWays.getChildren(),
+      ...this.levelView.movingGroup.getChildren(),
+    ]
+    let landing: Phaser.Physics.Arcade.StaticBody | null = null
+    for (const child of platforms) {
+      const platform = (child as Phaser.GameObjects.Rectangle).body as Phaser.Physics.Arcade.StaticBody
+      if (!platform || !platform.enable) continue
+      if (body.right <= platform.left || body.left >= platform.right) continue
+      if (prevBottom > platform.top + 1 || body.bottom <= platform.top + 1) continue
+      // Snap to the highest surface crossed, so a long frame cannot carry the
+      // player past an earlier floor.
+      if (!landing || platform.top < landing.top) landing = platform
+    }
+    if (!landing) return
+    body.position.y = landing.top - body.height
+    body.velocity.y = 0
+    body.updateCenter()
+    this.player.hitbox.y = landing.top
   }
 
   private readInput(): PlayerInput {

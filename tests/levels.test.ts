@@ -6,7 +6,7 @@ import {
   parseLevelId, totalStars, worldStars, worldUnlocked,
 } from '../src/data/levels'
 import { WORLDS, worldAt } from '../src/data/worlds'
-import { FLOOR_HEIGHT, generateLevel } from '../src/generator/level'
+import { FLOOR_HEIGHT, LIFT_TRAVEL, generateLevel } from '../src/generator/level'
 import { catalogErrors, progressionProbe, validateAllLevels, validateLevel } from '../src/generator/validation'
 import type { StarCount } from '../src/types'
 
@@ -79,7 +79,7 @@ describe('generated level validation', () => {
     expect(validateLevel(zen)).toEqual([])
   })
 
-  it('sits every lift flush with the floor it serves', () => {
+  it('sits every lift flush with its floor and clear of the floor below', () => {
     let lifts = 0
     for (const meta of ALL_LEVELS.slice(0, 60)) {
       const level = generateLevel(meta)
@@ -87,7 +87,10 @@ describe('generated level validation', () => {
       for (const lift of level.movingPlatforms.filter((item) => item.style === 'lift')) {
         lifts += 1
         expect(floorTops.has(lift.y - lift.height / 2)).toBe(true)
-        expect(lift.distance).toBe(FLOOR_HEIGHT)
+        expect(lift.distance).toBe(LIFT_TRAVEL)
+        // Gaps alternate sides, so the floor below is solid under a lift.
+        // It must never descend into that floor and crush its rider.
+        expect(FLOOR_HEIGHT - lift.distance).toBeGreaterThanOrEqual(90)
         expect(lift.speed).toBeGreaterThanOrEqual(30)
         expect(lift.speed).toBeLessThanOrEqual(60)
       }

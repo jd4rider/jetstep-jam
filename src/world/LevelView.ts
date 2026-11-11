@@ -446,23 +446,6 @@ export class LevelView {
     return platform ? { x: platform.x, y: platform.y, top: platform.body.top } : null
   }
 
-  rideDelta(playerBottom: number, playerLeft: number, playerRight: number): { x: number; y: number } {
-    for (const platform of this.moving) {
-      const top = platform.body.top
-      if (Math.abs(playerBottom - top) > 9) continue
-      const platformLeft = platform.body.left
-      const platformRight = platform.body.right
-      if (playerRight < platformLeft - 4 || playerLeft > platformRight + 4) continue
-      // A suspended tab can produce a large frame jump. Never fling the player
-      // across the stage when they step back onto a platform.
-      return {
-        x: Phaser.Math.Clamp(platform.deltaX, -24, 24),
-        y: Phaser.Math.Clamp(platform.deltaY, -24, 24),
-      }
-    }
-    return { x: 0, y: 0 }
-  }
-
   nearestOptional(playerX: number, playerY: number): Phaser.Physics.Arcade.Image | null {
     let best: Phaser.Physics.Arcade.Image | null = null
     let distance = Number.POSITIVE_INFINITY

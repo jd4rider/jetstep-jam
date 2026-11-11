@@ -33,15 +33,16 @@ declare global {
   }
 }
 
-// Tall phones are narrower than the 9:16 design. ENVELOP fills those screens
-// and crops only the outer margin; desktop and landscape windows keep the whole
-// stage with FIT. Phaser then centres the canvas itself with margins, so the
-// host element must not centre it a second time.
-const designAspect = GAME_WIDTH / GAME_HEIGHT
+// Fill the width whenever covering it costs at most a sliver of height. Tall
+// phones crop the outer margin; phones whose browser chrome makes the viewport
+// slightly wider than 9:16 crop under 6% of height, which stays inside the UI
+// inset. Tablets and desktop keep the whole stage with FIT.
+const widthCoverCrop = (): number => {
+  const canvasHeight = (window.innerWidth * GAME_HEIGHT) / GAME_WIDTH
+  return (canvasHeight - window.innerHeight) / Math.max(1, window.innerHeight)
+}
 const scaleModeForViewport = (): Phaser.Scale.ScaleModeType =>
-  window.innerWidth / Math.max(1, window.innerHeight) <= designAspect + 0.015
-    ? Phaser.Scale.ENVELOP
-    : Phaser.Scale.FIT
+  widthCoverCrop() <= 0.06 ? Phaser.Scale.ENVELOP : Phaser.Scale.FIT
 const scaleMode = scaleModeForViewport()
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -66,6 +67,7 @@ const config: Phaser.Types.Core.GameConfig = {
       gravity: { x: 0, y: TUNING.gravity },
       debug: false,
       fps: 60,
+      fixedStep: true,
     },
   },
   input: {

@@ -19,6 +19,10 @@ import type {
 export const LEVEL_WIDTH = 900
 export const TOP_FLOOR_Y = 500
 export const FLOOR_HEIGHT = 360
+// Gaps alternate sides, so the floor below a lift is solid where the lift
+// travels. The lift stops short of it; the gap left is inside a jump's reach
+// so it can still be boarded from below.
+export const LIFT_TRAVEL = FLOOR_HEIGHT - 100
 export const FLOOR_LEFT = 38
 export const FLOOR_RIGHT = 862
 const GAP_WIDTH_MIN = 116
@@ -257,12 +261,12 @@ export function generateLevel(meta: LevelMeta, options: GenerateOptions = {}): L
         movingPlatforms.push({
           x: gapX + gapWidth / 2,
           // Sit flush with the floor so the lift is a walk-on platform, then
-          // descend exactly one floor before returning.
+          // descend until it is a jump above the next floor and return.
           y: y + 8,
           width: Math.min(104, gapWidth - 18),
           height: 16,
           axis: 'y',
-          distance: FLOOR_HEIGHT,
+          distance: LIFT_TRAVEL,
           speed: range(random, 38, 56),
           phase: random(),
           style: 'lift',
