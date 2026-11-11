@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import { VERSION } from '../config'
 import { audio } from '../core/audio'
 import { loadSave } from '../core/save'
 import { ensureCoreTextures, ensureEnemyTextures, ensurePipTextures } from '../world/textures'
@@ -15,7 +16,7 @@ export class BootScene extends Phaser.Scene {
     const save = loadSave()
     audio.setSettings(save.settings)
     document.documentElement.dataset.game = 'jetstep-jam'
-    document.documentElement.dataset.version = '1.0.0'
+    document.documentElement.dataset.version = VERSION
     this.scene.start('Menu')
   }
 }
