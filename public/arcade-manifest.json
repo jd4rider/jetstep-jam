@@ -1,0 +1,21 @@
+{
+  "id": "jetstep-jam",
+  "title": "Jetstep Jam!",
+  "version": "1.0.0",
+  "developer": "Little Joy Arcade",
+  "description": "Light the boots. Recover the Sound Sparks. Restore the Harmony Engine.",
+  "orientation": "portrait",
+  "width": 540,
+  "height": 960,
+  "entry": "./",
+  "icon": "./favicon.svg",
+  "controls": {
+    "keyboard": ["A/D or arrows to move", "Space/Up to jump and jet", "S/Down to duck and slide", "E interact", "Esc pause"],
+    "touch": "Left, right, jet/jump and duck/slide"
+  },
+  "sdk": {
+    "client": "./arcade-client.js",
+    "gameId": "jetstep-jam",
+    "saveKey": "jetstep-jam-save-v1"
+  }
+}

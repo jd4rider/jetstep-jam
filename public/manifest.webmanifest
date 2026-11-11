@@ -1,0 +1,21 @@
+{
+  "name": "Jetstep Jam!",
+  "short_name": "Jetstep",
+  "description": "A portrait-first jet-boot arcade adventure across 1,000 musical machines.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0718",
+  "theme_color": "#160f2d",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
